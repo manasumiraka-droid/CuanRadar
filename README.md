@@ -4,7 +4,7 @@
 
 CuanRadar membantu menemukan, membandingkan, memperkirakan, memverifikasi, dan memilih peluang reward (uang tunai, poin yang bisa diuangkan, voucher, cashback) dari berbagai platform — entertainment, shopping, digital wallet, dan kategori lainnya — sehingga **setiap menit waktu pengguna menjadi lebih berharga**.
 
-> Status: **Tahap perencanaan / pre-development.** Dokumen di repo ini adalah fondasi yang disetujui untuk pengembangan bertahap (Fase 0–3).
+> Status: **BUILD 5.1 hardening sudah diimplementasikan pada branch dan menunggu validasi staging.** Migrasi, smoke test, serta rollout production belum dilakukan; proyek belum Public Beta Ready. Lihat [`docs/HANDOFF_PUBLIC_BETA.md`](docs/HANDOFF_PUBLIC_BETA.md).
 
 ## Prinsip Inti
 
@@ -33,6 +33,8 @@ Stack pilot: Vite + React + TypeScript + TanStack + Tailwind CSS (Cloudflare Pag
 | [`docs/BUDGET.md`](docs/BUDGET.md) | Estimasi biaya realistis pilot F0–F1 & run rate bulanan |
 | [`docs/RISKS.md`](docs/RISKS.md) | Matriks risiko & mitigasi + checklist legal per fase |
 | [`docs/ROADMAP.md`](docs/ROADMAP.md) | Fase F0–F3 × BUILD 1–5, milestone, kriteria exit, KPI |
+| [`docs/PUBLIC_BETA_PLAN.md`](docs/PUBLIC_BETA_PLAN.md) | Keputusan BUILD 5.1–5.3, provider beta, batas biaya, trust, staging, operasi, dan beta gate |
+| [`docs/HANDOFF_PUBLIC_BETA.md`](docs/HANDOFF_PUBLIC_BETA.md) | Status branch, hasil tes terakhir, pekerjaan tersisa, dan urutan handoff |
 | [`docs/F0_LOG.md`](docs/F0_LOG.md) | Log & status tugas Fase 0 (pre-seed, CI, trademark/domain) |
 | [`docs/AI_RULES.md`](docs/AI_RULES.md) | Aturan AI & rekayasa untuk implementasi code (panduan teknis, Bahasa Indonesia) |
 | [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) | Strategi deployment per fase: preview → soft-launch → production (Cloudflare Pages + Supabase) |
@@ -42,20 +44,20 @@ Stack pilot: Vite + React + TypeScript + TanStack + Tailwind CSS (Cloudflare Pag
 
 - **Disetujui:** PRD v1.1 + 8 dokumen pendukung (audit konseptual & integrasi strategi selesai). **Stack & Monetisasi final** — stack: Vite/Supabase/Cloudflare tanpa Next.js/Vercel (`docs/ARCHITECTURE.md` §1A); monetisasi: subscription-plan Pro disetujui (Rp39rb/bln, QRIS/e-wallet, kuota 3/7/15 & 4/8/16 — `docs/MONETIZATION.md` v1.3).
 - **Fase 0 ✅:** pre-seed katalog **30 platform** selesai (`data/seed-platforms.json`), skeleton repo + CI, cek trademark informal bersih. Detail: `docs/F0_LOG.md`.
-- **Fase 1 ✅ (BUILD 1–5, pilot production-ready):** landing + aplikasi responsive · UI terhubung Supabase (30 platform ter-seed) · engine scan DB-first + Deep Scan (edge function, review queue) · CuanScore & provenance · kuota server-side · review queue UI · production hardening (deep wajib login, throttle, analytics opsional) · **live di `cuanradar.pages.dev`**. Detail: `docs/F1_LOG.md`.
-- **Fase 2 ⏳ (BUILD 6–7, berikutnya):** komunitas (payout_reports, moderasi), tinjauan editor, pilot subscription Pro (QRIS/e-wallet), ekspansi 50+ platform. Detail: `docs/ROADMAP.md`.
+- **Fase 1 / BUILD 5.1 🔧:** landing + aplikasi responsive · UI terhubung Supabase (30 platform ter-seed) · engine scan DB-first + Deep Scan (edge function, review queue privat) · CuanScore & provenance · hardening kuota/rate/budget sedang divalidasi sebelum Public Beta. Versi lama **live di `cuanradar.pages.dev`**; branch 5.1 belum production. Detail: `docs/F1_LOG.md` dan `docs/BUILD_5_1.md`.
+- **Public Beta Readiness ⏳ (BUILD 5.2–5.3, berikutnya):** data trust/editor workflow, staging, E2E, observability, legal pages, backup/rollback, dan beta gate. BUILD 6–7/community/payment ditunda sampai hasil beta ditinjau.
 - **Asumsi terbuka:** (1) stack diadopsi dari PRD (Supabase + Cloudflare + Vite) — **Next.js/Vercel resmi ditutup untuk pilot** (keputusan founder: churn update & keterbatasan komersial Vercel); SEO di F2 via prerender/Astro bila diperlukan (lihat `docs/ARCHITECTURE.md` §1A); (2) auth di pilot dipertahankan (konsisten dengan credit & saved apps); (3) satu PRD kanonik (file root); (4) semua angka reward berlabel `last_verified_at` dan bisa usang — diungkapkan jujur; (5) cek trademark nama "CuanRadar" dilakukan di F0.
 - **Bahasa:** Bahasa Indonesia (v1); Inggris untuk ekspansi (di luar cakupan pilot).
 
 ## Handover — Posisi Saat Ini & Item Terbuka (update 2026-08-31)
 
-**Posisi:** F0 ✅ · **F1 (BUILD 1–5) ✅ selesai** — pilot production-ready, live di `cuanradar.pages.dev` (landing design system industrial + aplikasi, scan quick/deep via edge function, kuota server-side, review queue UI). **Berikutnya: F2 · BUILD 6** (komunitas & monetisasi — `docs/ROADMAP.md`).
+**Posisi:** F0 ✅ · **F1 BUILD 5.1 sedang divalidasi** — versi sebelumnya live di `cuanradar.pages.dev`; hardening baru belum boleh dianggap production sampai migrasi staging dan smoke test selesai. Setelah itu lanjut BUILD 5.2 dan 5.3, bukan langsung ke community/payment.
 
-**Terbuka / butuh tindakan user (F2):**
+**Terbuka / butuh tindakan sebelum Public Beta:**
 1. **Opsional:** key PostHog (`VITE_POSTHOG_KEY`, `VITE_POSTHOG_HOST`) di env Cloudflare Pages → analytics aktif.
 2. **Opsional:** domain custom `cuanradar.id` + DNS Cloudflare (DEPLOYMENT §3.4).
-3. **Tinjauan editor review queue**: kandidat menunggu approve/reject (BUILD 6).
-4. **Lighthouse ≥90 & beta 100 pengguna** — gerbang awal F2.
+3. **Tinjauan editor review queue**: kandidat menunggu approve/reject (BUILD 5.2).
+4. **Lighthouse ≥90, staging, dan internal beta** — bagian BUILD 5.3 sebelum beta publik.
 5. **Credentials mesin**: git PAT `estefanodesign` (repo+workflow) & `.env` (Supabase/DeepSeek/Serper/Cloudflare) tersimpan lokal — jangan di-commit.
 
 **Aturan kerja:** ikuti `docs/AI_RULES.md` (v3) — termasuk: jangan ubah stack tanpa persetujuan, jangan publish kandidat AI langsung (review queue dulu), uang = integer sen IDR, tiga sumbu status terpisah.
@@ -63,7 +65,7 @@ Stack pilot: Vite + React + TypeScript + TanStack + Tailwind CSS (Cloudflare Pag
 ## Mulai dari Mana
 
 1. Baca [`PRD-CuanRadar.md`](PRD-CuanRadar.md) (v1.1) sebagai baseline.
-2. Baca [`docs/ROADMAP.md`](docs/ROADMAP.md) — posisi saat ini: **F1 selesai, lanjut F2 BUILD 6**.
+2. Baca [`docs/PUBLIC_BETA_PLAN.md`](docs/PUBLIC_BETA_PLAN.md) dan [`docs/ROADMAP.md`](docs/ROADMAP.md) — posisi saat ini: **BUILD 5.1 menunggu staging, lalu BUILD 5.2–5.3**.
 3. Referensi teknis saat implementasi: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 4. Log kerja terbaru: [`docs/F1_LOG.md`](docs/F1_LOG.md).
 

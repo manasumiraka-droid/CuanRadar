@@ -69,7 +69,7 @@ export function ScanPage() {
               throw new Error('Deep Scan membutuhkan edge function server (deploy: lihat docs/DEPLOYMENT.md)')
             })()
       setPoll(result)
-      capture('scan_completed', { type: scanType, state: result.state, candidates: result.results.length })
+      capture('scan_completed', { type: scanType, state: result.state, candidates: result.candidates })
       refresh() // kuota server terbaru setelah scan benar-benar berjalan
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Scan gagal'
@@ -133,6 +133,14 @@ export function ScanPage() {
       ) : done ? (
         poll.state === 'failed' ? (
           <EmptyState title="Scan gagal" description={poll.error ?? 'Terjadi kesalahan. Coba lagi nanti.'} />
+        ) : poll.source === 'search' ? (
+          <>
+            <ScanProgress state="completed" candidates={poll.candidates} />
+            <EmptyState
+              title={`${poll.candidates} kandidat masuk tinjauan`}
+              description="Detail kandidat tidak ditampilkan sebelum diverifikasi editor. Katalog publik tetap berisi data yang sudah dikurasi."
+            />
+          </>
         ) : results.length === 0 ? (
           <>
             {poll.state === 'limited' ? <ScanProgress state="limited" candidates={0} /> : null}
@@ -142,9 +150,9 @@ export function ScanPage() {
           <section className="space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-semibold">
-                {poll.state === 'cache_completed' ? `${results.length} peluang ditemukan` : `${results.length} kandidat (hasil baru)`}
+                {results.length} peluang ditemukan
               </h2>
-              <ProvenanceBadge provenance={poll.source === 'search' ? 'search_new' : 'database'} />
+              <ProvenanceBadge provenance={poll.source === 'cache' ? 'cache' : 'database'} />
             </div>
             {results.map((p) => (
               <RewardCard
@@ -155,14 +163,9 @@ export function ScanPage() {
                   toggleSaved(p.id)
                   setSavedVersion((v) => v + 1)
                 }}
-                provenance={poll.source === 'search' ? 'search_new' : 'database'}
+                provenance={poll.source === 'cache' ? 'cache' : 'database'}
               />
             ))}
-            {poll.source === 'search' ? (
-              <p className="text-[11px] text-slate-500">
-                Kandidat dari pencarian baru — masuk review queue, belum diverifikasi (PRD Appendix A6). Skor dihitung sementara sisi-klien.
-              </p>
-            ) : null}
           </section>
         )
       ) : (
@@ -170,7 +173,7 @@ export function ScanPage() {
       )}
 
       <p className="text-[11px] text-slate-600">
-        Provenance: database terverifikasi / cache / hasil baru — selalu ditampilkan (PRD Appendix A9).
+        Provenance selalu ditampilkan; kandidat baru tetap privat sampai lolos tinjauan editor (PRD Appendix A6/A9).
       </p>
     </div>
   )

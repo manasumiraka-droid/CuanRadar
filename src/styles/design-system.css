@@ -300,7 +300,7 @@ body::before {
 }
 
 /* --- Buttons (Physical Keys) --- */
-/* Padding TIDAK ditetapkan di sini — diatur per tombol via utility px-*/py-* agar ukuran fleksibel
+/* Padding TIDAK ditetapkan di sini — diatur per tombol via utility horizontal/vertical agar ukuran fleksibel
    & tidak berkonflik dengan utility Tailwind (que .ins-btn didefinisikan setelah utility). */
 .ins-btn {
   display: inline-flex;

@@ -1,7 +1,9 @@
 # CuanRadar — Estimasi Budget Pilot (F0–F1)
 
-*Revisi: v1.0 · Tanggal estimasi: 2026 (data dasar 2025 — diverifikasi ulang saat F1) · Living document*
+*Revisi: v1.1 · 2026-09-07 · sebagian angka one-off tetap berupa estimasi · Living document*
 *Catatan: semua angka adalah estimasi pasar Indonesia/global. Asumsi kurs ±Rp16.500/US$. Angka wajib diverifikasi ulang saat F0/F1 (vendor pricing berubah).*
+
+> Untuk konfigurasi provider dan batas operasional Public Beta terbaru, gunakan `docs/PUBLIC_BETA_PLAN.md`. Estimasi token/model legacy di bawah dipertahankan sebagai histori perencanaan dan tidak boleh dipakai untuk mengisi konfigurasi production tanpa verifikasi vendor.
 
 ## 1. Jawaban Singkat (Rekomendasi)
 
@@ -45,12 +47,12 @@ Poin kunci: **biaya terbesar pilot bukan infra, tapi waktu** (dan labor kalau di
 
 **Rekomendasi: US$10/bulan** (LLM US$7 + Search US$3) adalah **minimum yang realistis** — bukan sekadar nyaman. Alasannya hitung-hitungan:
 
-**Per Deep Scan (deepseek, routing murah + truncation, harga 2025 sebelum potongan):** ±30–50k token input + 8–12k output ≈ **US$0.008–0.022**. Potongan harga DeepSeek V3.2 (>50%) menurunkannya lebih jauh.
+**Per Deep Scan (estimasi legacy):** angka lama tidak lagi menjadi konfigurasi. Public Beta memakai `deepseek-v4-flash`, batch extraction, batas output, cache bersama, dan rate vendor yang diverifikasi saat rollout.
 
 | Level | Budget | Kapasitas | Kapan dipakai |
 |---|---|---|---|
 | **Floor sementara** | US$3–5/bln (LLM only; search dalam free tier) | ±150–330 Deep Scan/bln (~5–11/hari) | Hanya 2–4 minggu pertama, volume scan rendah |
-| **MINIMUM REALISTIS** | **US$10/bln** (LLM US$7 + Search US$3) | ±450+ Deep Scan/bln + buffer melewati free-tier search | Pilot F1 normal (100-user beta, cache & discovery lock aktif) |
+| **MINIMUM REALISTIS** | **US$10/bln** | Kapasitas diukur dari telemetry staging, bukan asumsi token lama | Pilot beta terbatas dengan cache & discovery lock |
 | Nyaman | US$15–20/bln | Headroom Governor (tidak sering masuk EMERGENCY MODE) | Beta mulai aktif harian |
 | Pertumbuhan | +US$25 (Supabase Pro) | Dominan oleh DB, bukan AI | Saat free limit Supabase terlewati |
 

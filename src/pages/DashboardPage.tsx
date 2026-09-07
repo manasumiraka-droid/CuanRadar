@@ -3,7 +3,6 @@ import { Link } from '@tanstack/react-router'
 import { usePlatforms, useRefetchPlatforms } from '../lib/platforms'
 import { useScanCredits, useGovernor } from '../lib/scanCredits'
 import { getSavedIds, toggleSaved } from '../lib/savedApps'
-import { useReviewCandidates } from '../lib/reviewQueue'
 import { RewardCard } from '../components/RewardCard'
 import { EmptyState } from '../components/EmptyState'
 import { GovernorBanner } from '../components/GovernorBanner'
@@ -24,7 +23,6 @@ export function DashboardPage() {
   const { credits } = useScanCredits()
   const governor = useGovernor(credits)
   const saved = getSavedIds()
-  const { candidates } = useReviewCandidates(5)
   const [, setSavedVersion] = useState(0)
 
   const recommended = platforms.filter((p) => p.status === 'mvp').slice(0, 5)
@@ -94,17 +92,6 @@ export function DashboardPage() {
           ))}
         </div>
       </section>
-
-      {candidates.length > 0 ? (
-        <section>
-          <Link
-            to="/app/rewards"
-            className="block rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-200 transition hover:border-amber-400"
-          >
-            🔍 {candidates.length} kandidat baru menunggu tinjauan — lihat di Rewards →
-          </Link>
-        </section>
-      ) : null}
 
       <section>
         <h2 className="mb-2 text-sm font-semibold">Tersimpan ({saved.length})</h2>
