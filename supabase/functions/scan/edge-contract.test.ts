@@ -19,7 +19,7 @@ describe('Edge Function security contract', () => {
   })
 
   it('never returns raw Deep Scan candidates to the public client', () => {
-    expect(source).toContain("source: 'search',\n      results: [],")
+    expect(source).toMatch(/source:\s*'search',\s*results:\s*\[\],/)
     expect(source).not.toContain('results: candidates.map')
   })
 })
