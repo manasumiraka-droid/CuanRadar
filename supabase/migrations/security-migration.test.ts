@@ -4,6 +4,8 @@ import { describe, expect, it } from 'vitest'
 
 const migrationPath = fileURLToPath(new URL('./0002_build_5_1_security_hardening.sql', import.meta.url))
 const sql = readFileSync(migrationPath, 'utf8').toLowerCase()
+const concurrencyMigrationPath = fileURLToPath(new URL('./0003_build_5_1_rate_limit_concurrency.sql', import.meta.url))
+const concurrencySql = readFileSync(concurrencyMigrationPath, 'utf8').toLowerCase()
 
 describe('BUILD 5.1 migration security contract', () => {
   it('replaces broad owner policies with select-only access', () => {
@@ -27,5 +29,14 @@ describe('BUILD 5.1 migration security contract', () => {
     expect(sql).toContain('add column search_requests integer')
     expect(sql).toContain('add column input_tokens integer')
     expect(sql).toContain('add column search_provider text')
+  })
+
+  it('serializes concurrent rate-limit updates per key', () => {
+    expect(concurrencySql).toContain('pg_advisory_xact_lock')
+    expect(concurrencySql).toContain("hashtextextended(p_key_hash || ':' || p_action, 0)")
+    expect(concurrencySql).toContain('on conflict (key_hash, action) do update')
+    expect(concurrencySql).toContain(
+      'grant execute on function public.consume_api_rate_limit(text, text, integer, integer) to service_role',
+    )
   })
 })

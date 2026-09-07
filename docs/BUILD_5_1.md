@@ -8,7 +8,7 @@ Status: **implementation branch** (`codex/build-5.1-security-hardening`) · belu
 
 - [x] Repo ditautkan ke project staging yang terpisah dari production.
 - [x] Dry-run migrasi memverifikasi urutan `0001_init.sql` → `0002_build_5_1_security_hardening.sql`.
-- [x] Kedua migrasi berhasil diterapkan ke staging.
+- [x] Migrasi `0001`, `0002`, dan follow-up concurrency `0003` berhasil diterapkan ke staging.
 - [x] Secret provider Tavily/DeepSeek dan kontrol operasional staging dikonfigurasi.
 - [x] Edge Function `scan` berbasis Tavily di-deploy; katalog staging di-seed 30 platform.
 - [x] Smoke test inti lulus: Quick anonymous/authenticated, Deep authenticated, duplicate idempotency `409`, kuota habis `429`, budget fail-closed `429` dengan refund kuota, origin ditolak `403`, review queue tanpa login `401`, non-editor `403`, dan editor berhasil membaca queue.
@@ -16,9 +16,12 @@ Status: **implementation branch** (`codex/build-5.1-security-hardening`) · belu
 - [x] Frontend branch preview di-deploy ke `https://codex-build-5-1-security-har.cuanradar.pages.dev` dengan konfigurasi Supabase staging; production tidak berubah.
 - [x] Route `/`, `/app/scan`, `/app/rewards`, dan `/app/dashboard` merespons `200`; CSP dan `X-Content-Type-Options: nosniff` aktif; origin preview berhasil menjalankan Quick Scan staging.
 - [x] Audit bundle tidak menemukan secret server-side atau referensi project production; bundle hanya memuat konfigurasi client-safe project staging.
-- [ ] Concurrency test, inspeksi log lengkap, backup/restore, dan rollback masih harus dilakukan.
+- [x] Concurrency test lulus: enam Quick Scan paralel menghasilkan 3 sukses, 2 penolakan kuota, dan 1 penolakan rate-limit; dua request dengan idempotency key sama menghasilkan `200` + `409`, satu riwayat, dan satu konsumsi kuota.
+- [ ] Inspeksi log lengkap, backup/restore, dan rollback masih harus dilakukan.
 
 Deep Scan pertama menemukan output JSON model terpotong. Perbaikan membatasi ekstraksi ke lima aplikasi, menaikkan output terkontrol ke 2.500 token, membedakan retry, dan mengklasifikasikan truncation; smoke test ulang selesai dalam satu request AI.
+
+Tes concurrency awal memunculkan `503` sementara saat beberapa instance menginisialisasi key rate-limit yang sama. Migrasi `0003_build_5_1_rate_limit_concurrency.sql` menambahkan transaction-scoped advisory lock per key; pengujian ulang tidak menghasilkan `503` dan seluruh counter database tetap tepat.
 
 Production belum disentuh. Jangan melanjutkan deploy fungsi sebelum seluruh secret wajib tersedia.
 
