@@ -13,7 +13,10 @@ Status: **implementation branch** (`codex/build-5.1-security-hardening`) · belu
 - [x] Edge Function `scan` berbasis Tavily di-deploy; katalog staging di-seed 30 platform.
 - [x] Smoke test inti lulus: Quick anonymous/authenticated, Deep authenticated, duplicate idempotency `409`, kuota habis `429`, budget fail-closed `429` dengan refund kuota, origin ditolak `403`, review queue tanpa login `401`, non-editor `403`, dan editor berhasil membaca queue.
 - [x] Metadata Deep Scan mencatat Tavily 1 request, DeepSeek 1 request, 2 kandidat ke review queue, serta biaya search US$0; payload kandidat tidak dikirim pada respons publik.
-- [ ] Frontend preview, concurrency test, inspeksi log lengkap, backup/restore, dan rollback masih harus dilakukan.
+- [x] Frontend branch preview di-deploy ke `https://codex-build-5-1-security-har.cuanradar.pages.dev` dengan konfigurasi Supabase staging; production tidak berubah.
+- [x] Route `/`, `/app/scan`, `/app/rewards`, dan `/app/dashboard` merespons `200`; CSP dan `X-Content-Type-Options: nosniff` aktif; origin preview berhasil menjalankan Quick Scan staging.
+- [x] Audit bundle tidak menemukan secret server-side atau referensi project production; bundle hanya memuat konfigurasi client-safe project staging.
+- [ ] Concurrency test, inspeksi log lengkap, backup/restore, dan rollback masih harus dilakukan.
 
 Deep Scan pertama menemukan output JSON model terpotong. Perbaikan membatasi ekstraksi ke lima aplikasi, menaikkan output terkontrol ke 2.500 token, membedakan retry, dan mengklasifikasikan truncation; smoke test ulang selesai dalam satu request AI.
 
