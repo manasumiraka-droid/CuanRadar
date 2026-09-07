@@ -9,9 +9,13 @@ Status: **implementation branch** (`codex/build-5.1-security-hardening`) · belu
 - [x] Repo ditautkan ke project staging yang terpisah dari production.
 - [x] Dry-run migrasi memverifikasi urutan `0001_init.sql` → `0002_build_5_1_security_hardening.sql`.
 - [x] Kedua migrasi berhasil diterapkan ke staging.
-- [ ] Secret provider dan kontrol operasional staging belum dikonfigurasi.
-- [ ] Edge Function `scan` dan frontend preview belum di-deploy.
-- [ ] Smoke test serta pemeriksaan audit/budget belum dijalankan.
+- [x] Secret provider Tavily/DeepSeek dan kontrol operasional staging dikonfigurasi.
+- [x] Edge Function `scan` berbasis Tavily di-deploy; katalog staging di-seed 30 platform.
+- [x] Smoke test inti lulus: Quick anonymous/authenticated, Deep authenticated, duplicate idempotency `409`, kuota habis `429`, budget fail-closed `429` dengan refund kuota, origin ditolak `403`, review queue tanpa login `401`, non-editor `403`, dan editor berhasil membaca queue.
+- [x] Metadata Deep Scan mencatat Tavily 1 request, DeepSeek 1 request, 2 kandidat ke review queue, serta biaya search US$0; payload kandidat tidak dikirim pada respons publik.
+- [ ] Frontend preview, concurrency test, inspeksi log lengkap, backup/restore, dan rollback masih harus dilakukan.
+
+Deep Scan pertama menemukan output JSON model terpotong. Perbaikan membatasi ekstraksi ke lima aplikasi, menaikkan output terkontrol ke 2.500 token, membedakan retry, dan mengklasifikasikan truncation; smoke test ulang selesai dalam satu request AI.
 
 Production belum disentuh. Jangan melanjutkan deploy fungsi sebelum seluruh secret wajib tersedia.
 
