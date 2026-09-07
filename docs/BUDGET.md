@@ -36,7 +36,7 @@ Poin kunci: **biaya terbesar pilot bukan infra, tapi waktu** (dan labor kalau di
 | Supabase (Postgres + Auth + Edge) | Rp0 (Free: 2 project, 500MB) | Pro ~US$25 (~Rp410k) + usage | Rp0 → Rp410k di bulan 2–3 bila beta aktif |
 | Cloudflare (Pages/CDN/WAF/DDoS/DNS) | Rp0 | — | Rp0 |
 | deepseek (LLM) | pay-as-you-go | — | **US$5–10 (~Rp80–165k)** — budget PRD US$7/bln cukup |
-| Search API | Brave/Serper/Tavily free tier (~1–2,5k query/bln) | US$3–5/bln bila lewat | Rp0 (diverifikasi saat implementasi) |
+| Search API | Tavily `basic` free tier (1.000 kredit/bln); Serper fallback manual | US$3–5/bln bila lewat | Rp0 selama di dalam kuota gratis (diverifikasi 2026-09-07) |
 | Monitoring/analytics (Sentry/PostHog) | Rp0 (free tier) | US$10+ bila traffic besar | Rp0 |
 | Error/queue (pg-boss di Supabase) | Rp0 | — | Rp0 |
 | **Total/bln** | **US$5–10 (~Rp80–165k)** | **US$25–45 (~Rp410–740k)** | **±Rp150–400k/bln** |

@@ -10,7 +10,7 @@ CuanRadar needs fresh reward discovery without running search and AI for every u
 ## Decision
 
 - Quick Scan is database/cache-only.
-- Brave Search is the primary Deep Scan search provider; Serper is a bounded fallback/manual second check.
+- Tavily Search with `search_depth=basic` is the primary Deep Scan search provider; Serper is a bounded fallback/manual second check. Brave was replaced before staging deployment after its free tier became unavailable.
 - `deepseek-v4-flash` is the beta extraction model in non-thinking structured-output mode.
 - Reward math and CuanScore remain deterministic code.
 - Shared cache, deterministic pre-filtering, schema validation, deduplication, human approval, and server-side budget controls are mandatory.

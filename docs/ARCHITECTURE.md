@@ -11,7 +11,7 @@
 | Backend | **Supabase** (PostgreSQL + Auth + Edge Functions) | Free tier cukup untuk pilot |
 | Scan execution | **Background queue** (pg-boss di Supabase / Cloudflare Queues) | Edge function hanya menerima & meng-enqueue — scan panjang TIDAK sinkron (PRD Appendix A3) |
 | AI | **DeepSeek** via `AIProvider` abstraction | Beta: `deepseek-v4-flash` non-thinking untuk ekstraksi JSON; reward math/scoring tetap kode |
-| Search | `SearchProvider` abstraction | Beta: Brave utama; Serper fallback terbatas/manual second check |
+| Search | `SearchProvider` abstraction | Beta: Tavily `basic` utama; Serper fallback terbatas/manual second check |
 | Hosting/CDN/WAF/DDoS/DNS | Cloudflare | Rate limiting di Cloudflare + application layer |
 | Source control | GitHub | CI untuk test & deploy |
 | Monitoring | Cloudflare + Supabase + log scan (`scan_history`) | Cost tracking per scan (PRD §43) |

@@ -46,8 +46,8 @@ Pilihan operasional per 2026-09-07:
 | Fungsi | Pilihan beta |
 |---|---|
 | Quick Scan | Database + shared cache; tanpa search/AI |
-| Deep Scan search utama | Brave Search API |
-| Search fallback | Serper; hanya bila Brave tidak memadai atau editor meminta verifikasi kedua |
+| Deep Scan search utama | Tavily Search API (`basic`, free tier bulanan) |
+| Search fallback | Serper; hanya bila Tavily tidak memadai atau editor meminta verifikasi kedua |
 | Ekstraksi/kurasi | `deepseek-v4-flash`, non-thinking, output JSON, temperature rendah/deterministik |
 | Perhitungan reward dan CuanScore | Kode deterministik, bukan LLM |
 | Publikasi | Persetujuan human/editor wajib |

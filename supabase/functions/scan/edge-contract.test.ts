@@ -22,4 +22,13 @@ describe('Edge Function security contract', () => {
     expect(source).toMatch(/source:\s*'search',\s*results:\s*\[\],/)
     expect(source).not.toContain('results: candidates.map')
   })
+
+  it('uses the bounded Tavily free-tier request contract', () => {
+    expect(source).toContain("fetchJson('https://api.tavily.com/search'")
+    expect(source).toContain("search_depth: 'basic'")
+    expect(source).toContain("country: 'indonesia'")
+    expect(source).toContain("language: 'id'")
+    expect(source).toContain('max_results: Math.min(limit, 20)')
+    expect(source).not.toContain('api.search.brave.com')
+  })
 })

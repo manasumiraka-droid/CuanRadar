@@ -31,14 +31,14 @@ Set Supabase Edge Function secrets berikut:
 
 ```text
 SUPABASE_SERVICE_ROLE_KEY
-SEARCH_PROVIDER=brave
+SEARCH_PROVIDER=tavily
 SEARCH_API_KEY
 DEEPSEEK_API_KEY
 DEEPSEEK_MODEL=deepseek-v4-flash
 ALLOWED_ORIGINS=https://cuanradar.pages.dev
 RATE_LIMIT_SALT=<nilai acak minimal 32 byte>
 DAILY_PROVIDER_BUDGET_USD=1
-SEARCH_COST_PER_REQUEST_USD=0.005
+SEARCH_COST_PER_REQUEST_USD=0
 AI_INPUT_USD_PER_MILLION=0.44
 AI_OUTPUT_USD_PER_MILLION=1.32
 AI_RESERVED_INPUT_TOKENS=12000
@@ -46,7 +46,7 @@ AI_RESERVED_INPUT_TOKENS=12000
 
 Harga provider berubah dari waktu ke waktu. Nilai biaya di atas adalah parameter operasional dan harus disesuaikan dengan dashboard provider sebelum deployment.
 
-Brave adalah provider utama beta. Serper tetap didukung sebagai fallback/manual verification, tetapi fallback otomatis belum boleh menambah biaya tanpa batas dan harus tunduk pada Budget Governor. DeepSeek dijalankan dalam mode non-thinking dengan output JSON yang divalidasi; exact request contract wajib di-smoke-test terhadap API staging sebelum rollout.
+Tavily `basic` adalah provider utama beta dengan free tier bulanan; harga efektif dikonfigurasi `0` selama pemakaian tetap di dalam kuota gratis. Serper tetap didukung sebagai fallback/manual verification, tetapi fallback otomatis belum boleh menambah biaya tanpa batas dan harus tunduk pada Budget Governor. DeepSeek dijalankan dalam mode non-thinking dengan output JSON yang divalidasi; exact request contract wajib di-smoke-test terhadap API staging sebelum rollout.
 
 ## Urutan rollout aman
 

@@ -85,13 +85,13 @@ npx supabase functions deploy scan
 # set secrets (nilai sama dengan .env lokal Anda; service_role dari dashboard)
 npx supabase secrets set DEEPSEEK_API_KEY=<key>
 npx supabase secrets set DEEPSEEK_MODEL=deepseek-v4-flash
-npx supabase secrets set SEARCH_PROVIDER=brave
+npx supabase secrets set SEARCH_PROVIDER=tavily
 npx supabase secrets set SEARCH_API_KEY=<key>
 npx supabase secrets set SUPABASE_SERVICE_ROLE_KEY=<key>
 npx supabase secrets set ALLOWED_ORIGINS=https://cuanradar.pages.dev
 npx supabase secrets set RATE_LIMIT_SALT=<random-minimal-32-byte>
 npx supabase secrets set DAILY_PROVIDER_BUDGET_USD=1
-npx supabase secrets set SEARCH_COST_PER_REQUEST_USD=0.005
+npx supabase secrets set SEARCH_COST_PER_REQUEST_USD=0
 ```
 
 > `SUPABASE_URL` & `SUPABASE_ANON_KEY` otomatis tersedia di runtime edge function. Jangan pernah menyimpan service_role di frontend (AI_RULES §9).

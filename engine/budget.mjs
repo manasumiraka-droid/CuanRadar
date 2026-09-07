@@ -7,7 +7,7 @@ export const MONTHLY_BUDGET = { llmUsd: 7, searchUsd: 3 } // PRD §40 v1.1
 export const RATES = {
   llmInputPer1k: 0.00027, // $0.27 / 1M input
   llmOutputPer1k: 0.0011, // $1.10 / 1M output
-  searchPerQuery: 0.002, // estimasi per query (Serper/Brave berbayar)
+  searchPerQuery: 0, // Tavily basic free tier; ubah via konfigurasi bila kuota gratis terlampaui
 }
 
 export function estimateLlmCost({ inputTokens = 0, outputTokens = 0 }) {

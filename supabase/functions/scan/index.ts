@@ -78,9 +78,9 @@ async function fetchJson(url: string, options: RequestInit, timeoutMs = 25_000):
   }
 }
 
-function searchProvider(): 'serper' | 'brave' {
+function searchProvider(): 'tavily' | 'serper' {
   const provider = (Deno.env.get('SEARCH_PROVIDER') ?? '').trim().toLowerCase()
-  if (provider !== 'serper' && provider !== 'brave') throw new Error('search-provider-not-configured')
+  if (provider !== 'tavily' && provider !== 'serper') throw new Error('search-provider-not-configured')
   return provider
 }
 
@@ -88,6 +88,32 @@ async function searchWeb(query: string, limit: number): Promise<SearchResult[]> 
   const provider = searchProvider()
   const key = Deno.env.get('SEARCH_API_KEY')
   if (!key) throw new Error('search-provider-not-configured')
+  if (provider === 'tavily') {
+    const data = await fetchJson('https://api.tavily.com/search', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        query,
+        search_depth: 'basic',
+        topic: 'general',
+        max_results: Math.min(limit, 20),
+        country: 'indonesia',
+        language: 'id',
+        include_answer: false,
+        include_raw_content: false,
+        include_images: false,
+      }),
+    })
+    const rows = Array.isArray(data.results) ? data.results : []
+    return rows.map((row) => {
+      const value = row as Record<string, unknown>
+      return {
+        title: typeof value.title === 'string' ? value.title : '',
+        url: typeof value.url === 'string' ? value.url : '',
+        snippet: typeof value.content === 'string' ? value.content : '',
+      }
+    })
+  }
   if (provider === 'serper') {
     const data = await fetchJson('https://google.serper.dev/search', {
       method: 'POST',
@@ -104,20 +130,7 @@ async function searchWeb(query: string, limit: number): Promise<SearchResult[]> 
       }
     })
   }
-  const data = await fetchJson(
-    `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}&count=${Math.min(limit, 20)}`,
-    { headers: { 'X-Subscription-Token': key, Accept: 'application/json' } },
-  )
-  const web = data.web && typeof data.web === 'object' ? (data.web as Record<string, unknown>) : {}
-  const rows = Array.isArray(web.results) ? web.results : []
-  return rows.map((row) => {
-    const value = row as Record<string, unknown>
-    return {
-      title: typeof value.title === 'string' ? value.title : '',
-      url: typeof value.url === 'string' ? value.url : '',
-      snippet: typeof value.description === 'string' ? value.description : '',
-    }
-  })
+  throw new Error('search-provider-not-configured')
 }
 
 async function aiComplete(prompt: string, maxTokens = 1_500): Promise<{ text: string; usage: ProviderUsage }> {
@@ -241,7 +254,7 @@ function providerRates() {
   const provider = searchProvider()
   return {
     searchProvider: provider,
-    searchPerRequestUsd: envNumber('SEARCH_COST_PER_REQUEST_USD', provider === 'brave' ? 0.005 : 0.001, 0, 1),
+    searchPerRequestUsd: envNumber('SEARCH_COST_PER_REQUEST_USD', provider === 'tavily' ? 0 : 0.001, 0, 1),
     aiInputPerMillionUsd: envNumber('AI_INPUT_USD_PER_MILLION', 0.44, 0, 100),
     aiOutputPerMillionUsd: envNumber('AI_OUTPUT_USD_PER_MILLION', 1.32, 0, 500),
     dailyLimitUsd: envNumber('DAILY_PROVIDER_BUDGET_USD', 1, 0.01, 10_000),
