@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   isEditorRole,
   isOriginAllowed,
+  parseProviderJson,
   parseAllowedOrigins,
   readBoundedNumber,
   validateIdempotencyKey,
@@ -62,5 +63,11 @@ describe('authorization and request guards', () => {
     expect(readBoundedNumber('99', 5, 1, 10)).toBe(10)
     expect(readBoundedNumber('-2', 5, 1, 10)).toBe(1)
     expect(readBoundedNumber('nope', 5, 1, 10)).toBe(5)
+  })
+
+  it('classifies truncated and malformed provider JSON safely', () => {
+    expect(parseProviderJson('{"apps":[]}', 'stop')).toEqual({ apps: [] })
+    expect(() => parseProviderJson('{"apps":[{"name":"cut', 'length')).toThrow('ai-output-truncated')
+    expect(() => parseProviderJson('{"apps":', 'stop')).toThrow('ai-output-invalid-json')
   })
 })

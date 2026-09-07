@@ -31,4 +31,11 @@ describe('Edge Function security contract', () => {
     expect(source).toContain('max_results: Math.min(limit, 20)')
     expect(source).not.toContain('api.search.brave.com')
   })
+
+  it('bounds AI extraction and detects truncated output', () => {
+    expect(source).toContain('MAX_EXTRACTED_APPS = 5')
+    expect(source).toContain("envNumber('AI_MAX_OUTPUT_TOKENS', 2_500, 1_500, 5_000)")
+    expect(source).toContain('parseProviderJson(result.text, result.finishReason)')
+    expect(source).toContain('appsValue.slice(0, MAX_EXTRACTED_APPS)')
+  })
 })

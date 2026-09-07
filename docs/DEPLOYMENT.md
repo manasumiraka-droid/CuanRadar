@@ -92,6 +92,7 @@ npx supabase secrets set ALLOWED_ORIGINS=https://cuanradar.pages.dev
 npx supabase secrets set RATE_LIMIT_SALT=<random-minimal-32-byte>
 npx supabase secrets set DAILY_PROVIDER_BUDGET_USD=1
 npx supabase secrets set SEARCH_COST_PER_REQUEST_USD=0
+npx supabase secrets set AI_MAX_OUTPUT_TOKENS=2500
 ```
 
 > `SUPABASE_URL` & `SUPABASE_ANON_KEY` otomatis tersedia di runtime edge function. Jangan pernah menyimpan service_role di frontend (AI_RULES §9).

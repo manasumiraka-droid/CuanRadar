@@ -42,6 +42,7 @@ SEARCH_COST_PER_REQUEST_USD=0
 AI_INPUT_USD_PER_MILLION=0.44
 AI_OUTPUT_USD_PER_MILLION=1.32
 AI_RESERVED_INPUT_TOKENS=12000
+AI_MAX_OUTPUT_TOKENS=2500
 ```
 
 Harga provider berubah dari waktu ke waktu. Nilai biaya di atas adalah parameter operasional dan harus disesuaikan dengan dashboard provider sebelum deployment.

@@ -82,6 +82,15 @@ export function readBoundedNumber(
   return Math.min(maximum, Math.max(minimum, parsed))
 }
 
+export function parseProviderJson(text: string, finishReason: string | null): unknown {
+  if (finishReason === 'length') throw new Error('ai-output-truncated')
+  try {
+    return JSON.parse(text) as unknown
+  } catch {
+    throw new Error('ai-output-invalid-json')
+  }
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
