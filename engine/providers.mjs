@@ -1,5 +1,5 @@
 // CuanRadar — engine/providers.mjs (SERVER-SIDE ONLY — jangan diimport frontend)
-// Provider nyata: Brave/Serper (search) + DeepSeek (AI). Kunci dibaca dari env server.
+// Provider nyata: Tavily/Serper (search) + DeepSeek (AI). Kunci dibaca dari env server.
 // Abstraksi: SearchProvider / AIProvider (PRD §19–20); stub aktif bila kunci belum ada.
 
 export class NotConfiguredError extends Error {
@@ -23,14 +23,27 @@ async function fetchJson(url, options) {
   }
 }
 
-// ---------- Search: Brave ----------
-function braveProvider(key) {
+// ---------- Search: Tavily ----------
+function tavilyProvider(key) {
   return {
-    name: 'brave',
+    name: 'tavily',
     async search(query, { limit = 5 } = {}) {
-      const url = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}&count=${Math.min(limit, 20)}`
-      const data = await fetchJson(url, { headers: { 'X-Subscription-Token': key, Accept: 'application/json' } })
-      return (data.web?.results ?? []).map((r) => ({ title: r.title ?? '', url: r.url ?? '', snippet: r.description ?? '' }))
+      const data = await fetchJson('https://api.tavily.com/search', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query,
+          search_depth: 'basic',
+          topic: 'general',
+          max_results: Math.min(limit, 20),
+          country: 'indonesia',
+          language: 'id',
+          include_answer: false,
+          include_raw_content: false,
+          include_images: false,
+        }),
+      })
+      return (data.results ?? []).map((r) => ({ title: r.title ?? '', url: r.url ?? '', snippet: r.content ?? '' }))
     },
   }
 }
@@ -65,9 +78,9 @@ export function getSearchProvider() {
     .split(/[\s#]/)[0]
     .toLowerCase()
   const key = process.env.SEARCH_API_KEY
-  if (kind === 'brave') {
-    if (!key) throw new NotConfiguredError('SearchProvider brave (SEARCH_API_KEY)')
-    return braveProvider(key)
+  if (kind === 'tavily') {
+    if (!key) throw new NotConfiguredError('SearchProvider tavily (SEARCH_API_KEY)')
+    return tavilyProvider(key)
   }
   if (kind === 'serper') {
     if (!key) throw new NotConfiguredError('SearchProvider serper (SEARCH_API_KEY)')

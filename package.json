@@ -12,6 +12,7 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
     "db:seed": "node --env-file=.env scripts/seed-supabase.mjs",
     "scan:quick": "node --env-file=.env scripts/run-scan.mjs --type quick",
     "scan:deep": "node --env-file=.env scripts/run-scan.mjs --type deep"
@@ -31,6 +32,7 @@
     "@vitejs/plugin-react": "^6.1.1",
     "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2",
-    "vite": "^8.2.2"
+    "vite": "^8.2.2",
+    "vitest": "^5.0.0"
   }
 }

@@ -1,6 +1,8 @@
 # CuanRadar — Log Fase 1 · BUILD 1–5 (Pilot + Production)
 
-*Status: **SELESAI** (2026-08-31) — Fase 1 tuntas; Fase 2 dimulai dari BUILD 6 · Mulai: 2026-08-30 · Referensi: `docs/ROADMAP.md` v1.2 (BUILD 4–5 di F1), `PRD-CuanRadar.md` §50–59, `docs/ARCHITECTURE.md`, `docs/AI_RULES.md`*
+> **Status correction (2026-09-07):** Dokumen ini adalah histori implementasi awal. Klaim BUILD 5 selesai/production-ready di bawah tidak lagi menjadi status terkini setelah audit Public Beta. Gunakan `docs/HANDOFF_PUBLIC_BETA.md`, `docs/PUBLIC_BETA_PLAN.md`, dan `docs/ROADMAP.md` v1.3 sebagai sumber status terbaru.
+
+*Status historis per 2026-08-31: implementasi awal BUILD 1–5 selesai. Status terkini: BUILD 5.1 menunggu staging, lalu BUILD 5.2–5.3 sebelum Public Beta · Referensi terbaru: `docs/ROADMAP.md` v1.3.*
 
 ## Cakupan BUILD 1 (PRD §64)
 

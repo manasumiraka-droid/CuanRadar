@@ -1,11 +1,9 @@
-// CuanRadar — Rewards (katalog platform, PRD §53/§55) + kandidat review queue (BUILD 4)
+// CuanRadar — Rewards (katalog platform terverifikasi, PRD §53/§55)
 import { useMemo, useState } from 'react'
 import { usePlatforms } from '../lib/platforms'
-import { useReviewCandidates } from '../lib/reviewQueue'
 import { RewardCard } from '../components/RewardCard'
 import { getSavedIds, toggleSaved } from '../lib/savedApps'
 import { EmptyState } from '../components/EmptyState'
-import { ProvenanceBadge } from '../components/ProvenanceBadge'
 import type { Category } from '../types'
 
 const FILTERS: { value: Category | 'all'; label: string }[] = [
@@ -22,7 +20,6 @@ export function RewardsPage() {
   const [, setSavedVersion] = useState(0)
   const saved = getSavedIds()
   const { platforms: allPlatforms, source } = usePlatforms()
-  const { candidates } = useReviewCandidates(10)
 
   const platforms = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -44,32 +41,6 @@ export function RewardsPage() {
         </div>
         <p className="text-sm text-slate-400">Katalog platform penghasil reward — kurasi manual F0.</p>
       </section>
-
-      {candidates.length > 0 ? (
-        <section className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-amber-300">
-              🔍 Kandidat baru — menunggu tinjauan ({candidates.length})
-            </h2>
-            <ProvenanceBadge provenance="search_new" />
-          </div>
-          {candidates.map((p) => (
-            <RewardCard
-              key={p.id}
-              platform={p}
-              saved={saved.includes(p.id)}
-              onToggleSave={() => {
-                toggleSaved(p.id)
-                setSavedVersion((v) => v + 1)
-              }}
-              provenance="search_new"
-            />
-          ))}
-          <p className="text-[11px] text-slate-500">
-            Kandidat dari Deep Scan belum diverifikasi — tidak masuk rekomendasi sampai disetujui editor (PRD Appendix A6).
-          </p>
-        </section>
-      ) : null}
 
       <input
         type="search"

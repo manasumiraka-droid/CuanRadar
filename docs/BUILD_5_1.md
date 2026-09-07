@@ -1,0 +1,79 @@
+# BUILD 5.1 — Public Beta Security Hardening
+
+Status: **implementation branch** (`codex/build-5.1-security-hardening`) · belum diterapkan ke production.
+
+## Log rollout staging
+
+*2026-09-07 — Supabase project `CuanRadar Staging` (`ojdqlhznveomahfrxmwn`)*
+
+- [x] Repo ditautkan ke project staging yang terpisah dari production.
+- [x] Dry-run migrasi memverifikasi urutan `0001_init.sql` → `0002_build_5_1_security_hardening.sql`.
+- [x] Migrasi `0001`, `0002`, dan follow-up concurrency `0003` berhasil diterapkan ke staging.
+- [x] Secret provider Tavily/DeepSeek dan kontrol operasional staging dikonfigurasi.
+- [x] Edge Function `scan` berbasis Tavily di-deploy; katalog staging di-seed 30 platform.
+- [x] Smoke test inti lulus: Quick anonymous/authenticated, Deep authenticated, duplicate idempotency `409`, kuota habis `429`, budget fail-closed `429` dengan refund kuota, origin ditolak `403`, review queue tanpa login `401`, non-editor `403`, dan editor berhasil membaca queue.
+- [x] Metadata Deep Scan mencatat Tavily 1 request, DeepSeek 1 request, 2 kandidat ke review queue, serta biaya search US$0; payload kandidat tidak dikirim pada respons publik.
+- [x] Frontend branch preview di-deploy ke `https://codex-build-5-1-security-har.cuanradar.pages.dev` dengan konfigurasi Supabase staging; production tidak berubah.
+- [x] Route `/`, `/app/scan`, `/app/rewards`, dan `/app/dashboard` merespons `200`; CSP dan `X-Content-Type-Options: nosniff` aktif; origin preview berhasil menjalankan Quick Scan staging.
+- [x] Audit bundle tidak menemukan secret server-side atau referensi project production; bundle hanya memuat konfigurasi client-safe project staging.
+- [x] Concurrency test lulus: enam Quick Scan paralel menghasilkan 3 sukses, 2 penolakan kuota, dan 1 penolakan rate-limit; dua request dengan idempotency key sama menghasilkan `200` + `409`, satu riwayat, dan satu konsumsi kuota.
+- [ ] Inspeksi log lengkap, backup/restore, dan rollback masih harus dilakukan.
+
+Status operations drill dan runbook tercatat di `docs/BUILD_5_1_OPERATIONS.md`. Artefak rollback fungsi/frontend sudah diverifikasi tersedia, tetapi gate tetap terbuka: audit log memerlukan akses Logs Explorer/Management API yang diberikan eksplisit, sedangkan restore terisolasi memerlukan Docker Desktop atau preview database branch. Staging saat ini tidak memiliki PITR maupun physical backup.
+
+Deep Scan pertama menemukan output JSON model terpotong. Perbaikan membatasi ekstraksi ke lima aplikasi, menaikkan output terkontrol ke 2.500 token, membedakan retry, dan mengklasifikasikan truncation; smoke test ulang selesai dalam satu request AI.
+
+Tes concurrency awal memunculkan `503` sementara saat beberapa instance menginisialisasi key rate-limit yang sama. Migrasi `0003_build_5_1_rate_limit_concurrency.sql` menambahkan transaction-scoped advisory lock per key; pengujian ulang tidak menghasilkan `503` dan seluruh counter database tetap tepat.
+
+Production belum disentuh. Jangan melanjutkan deploy fungsi sebelum seluruh secret wajib tersedia.
+
+## Scope yang diimplementasikan
+
+- Akses review queue memerlukan login dan role `editor`/`admin` dari `app_metadata`; response Deep Scan dan UI publik hanya menampilkan jumlah kandidat, bukan payload mentah.
+- Policy `scan_history` dan `scan_credits` menjadi read-only untuk pemilik. Konsumsi kuota dilakukan melalui fungsi database atomik.
+- Rate limit scan disimpan secara atomik per user atau IP tamu yang sudah di-hash dengan salt.
+- Deep Scan memakai reservasi budget harian sebelum memanggil Search/AI provider.
+- Request scan divalidasi ketat, memakai `Idempotency-Key`, batas payload, CORS allowlist, timeout provider, dan error publik yang disanitasi.
+- Audit metadata menyimpan request ID, jumlah request provider, token, model, serta biaya aktual.
+- Header keamanan Cloudflare Pages, unit/security test, dependency audit, Dependabot, dan Deno typecheck ditambahkan.
+
+## Konfigurasi wajib sebelum deployment
+
+Set Supabase Edge Function secrets berikut:
+
+```text
+SUPABASE_SERVICE_ROLE_KEY
+SEARCH_PROVIDER=tavily
+SEARCH_API_KEY
+DEEPSEEK_API_KEY
+DEEPSEEK_MODEL=deepseek-v4-flash
+ALLOWED_ORIGINS=https://cuanradar.pages.dev
+RATE_LIMIT_SALT=<nilai acak minimal 32 byte>
+DAILY_PROVIDER_BUDGET_USD=1
+SEARCH_COST_PER_REQUEST_USD=0
+AI_INPUT_USD_PER_MILLION=0.44
+AI_OUTPUT_USD_PER_MILLION=1.32
+AI_RESERVED_INPUT_TOKENS=12000
+AI_MAX_OUTPUT_TOKENS=2500
+```
+
+Harga provider berubah dari waktu ke waktu. Nilai biaya di atas adalah parameter operasional dan harus disesuaikan dengan dashboard provider sebelum deployment.
+
+Tavily `basic` adalah provider utama beta dengan free tier bulanan; harga efektif dikonfigurasi `0` selama pemakaian tetap di dalam kuota gratis. Serper tetap didukung sebagai fallback/manual verification, tetapi fallback otomatis belum boleh menambah biaya tanpa batas dan harus tunduk pada Budget Governor. DeepSeek dijalankan dalam mode non-thinking dengan output JSON yang divalidasi; exact request contract wajib di-smoke-test terhadap API staging sebelum rollout.
+
+## Urutan rollout aman
+
+1. Buat backup database dan catat versi fungsi production.
+2. Terapkan migrasi `0002_build_5_1_security_hardening.sql` pada staging/test project.
+3. Set seluruh secret, kemudian deploy Edge Function `scan`.
+4. Deploy frontend preview dari branch ini.
+5. Tambahkan URL preview sementara ke `ALLOWED_ORIGINS`, lalu jalankan smoke test: anonymous Quick, authenticated Quick/Deep, kuota habis, duplicate idempotency, budget habis, origin ditolak, dan akses review queue non-editor.
+6. Periksa `scan_history` serta `provider_budget_daily`; pastikan tidak ada secret atau payload sensitif di log.
+7. Setelah lolos, ulangi migration → function → frontend di production. Jangan membalik urutan ini.
+
+## Batas BUILD 5.1
+
+- Deep Scan masih berjalan sinkron di Edge Function. Background queue, retry worker, dan status polling nyata tetap menjadi pekerjaan berikutnya sebelum trafik diperbesar.
+- Belum ada UI editor untuk approve/reject kandidat. Endpoint baca sudah dibatasi role, tetapi alur moderasi lengkap harus dibangun terpisah.
+- Migrasi harus diuji pada project Supabase staging; test lokal saat ini memverifikasi kontrak SQL, bukan mengeksekusi Postgres/Supabase penuh.
+- Observability eksternal dan alert budget belum aktif sampai credentials/tujuan alert dikonfigurasi.

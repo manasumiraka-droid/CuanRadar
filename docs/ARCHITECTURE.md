@@ -1,6 +1,6 @@
 # CuanRadar — Arsitektur Teknis
 
-*Revisi: v1.2 · Living document · Prinsip: low cost, database-first, mobile-first*
+*Revisi: v1.3 · 2026-09-07 · Living document · Prinsip: low cost, database-first, mobile-first*
 
 ## 1. Keputusan Stack (final untuk pilot)
 
@@ -10,8 +10,8 @@
 | UI | shadcn/ui (Radix) bila dibutuhkan komponen kompleks | Mobile-first breakpoint 375px → 640 → 1024 → 1280; touch target ≥44px; dark mode |
 | Backend | **Supabase** (PostgreSQL + Auth + Edge Functions) | Free tier cukup untuk pilot |
 | Scan execution | **Background queue** (pg-boss di Supabase / Cloudflare Queues) | Edge function hanya menerima & meng-enqueue — scan panjang TIDAK sinkron (PRD Appendix A3) |
-| AI | **deepseek** via `AIProvider` abstraction | Model routing: cheap → mid → premium (PRD §23) |
-| Search | `SearchProvider` abstraction | Free-tier dulu (Brave/Serper — diverifikasi saat implementasi); Google grounding sebagai opsi |
+| AI | **DeepSeek** via `AIProvider` abstraction | Beta: `deepseek-v4-flash` non-thinking untuk ekstraksi JSON; reward math/scoring tetap kode |
+| Search | `SearchProvider` abstraction | Beta: Tavily `basic` utama; Serper fallback terbatas/manual second check |
 | Hosting/CDN/WAF/DDoS/DNS | Cloudflare | Rate limiting di Cloudflare + application layer |
 | Source control | GitHub | CI untuk test & deploy |
 | Monitoring | Cloudflare + Supabase + log scan (`scan_history`) | Cost tracking per scan (PRD §43) |
@@ -109,9 +109,10 @@ Ditambah (v1.1): **scheduled daily job** menandai EXPIRED & memicu re-verifikasi
 
 ## 7. Cost & Monitoring
 
-- Budget: LLM US$7 + Search US$3 = US$10/bulan (PRD §40, v1.1) — configurable via env.
+- Target desain Public Beta: total provider <US$10–20/bulan melalui shared cache dan discovery terjadwal; bukan jaminan biaya.
 - Setiap scan mencatat: search requests, AI requests, token usage, model, estimated cost (LLM & Search terpisah), cache hit, candidates, verification (PRD §43).
 - Target per Deep Scan (PRD §42 v1.1): total excellent < US$0.005; red flag > US$0.03.
+- Harga/model/terms vendor harus diverifikasi sebelum rollout; semua rate biaya configurable melalui secret/env dan tunduk pada hard cap fail-closed.
 
 ## 8. Performa (mobile-first)
 

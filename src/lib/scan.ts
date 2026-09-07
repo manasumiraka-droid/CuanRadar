@@ -108,7 +108,10 @@ export interface ScanStartInput {
 /** Jalankan scan lewat Supabase edge function `/scan`. Fallback: caller pakai runQuickScanLocal bila tidak dikonfigurasi. */
 export async function startScanRemote(input: ScanStartInput): Promise<ScanPollResult> {
   if (!supabase) throw new Error('supabase-not-configured')
-  const { data, error } = await supabase.functions.invoke('scan', { body: input })
+  const { data, error } = await supabase.functions.invoke('scan', {
+    body: { action: 'scan', ...input },
+    headers: { 'Idempotency-Key': crypto.randomUUID() },
+  })
   if (error) throw new Error(error.message || 'scan failed')
   if (data && typeof data === 'object' && 'error' in data && data.error) throw new Error(String(data.error))
   const d = (data ?? {}) as { id?: string; state?: ScanState; source?: string; results?: Platform[]; candidates?: number }

@@ -1,7 +1,9 @@
 # CuanRadar — Estimasi Budget Pilot (F0–F1)
 
-*Revisi: v1.0 · Tanggal estimasi: 2026 (data dasar 2025 — diverifikasi ulang saat F1) · Living document*
+*Revisi: v1.1 · 2026-09-07 · sebagian angka one-off tetap berupa estimasi · Living document*
 *Catatan: semua angka adalah estimasi pasar Indonesia/global. Asumsi kurs ±Rp16.500/US$. Angka wajib diverifikasi ulang saat F0/F1 (vendor pricing berubah).*
+
+> Untuk konfigurasi provider dan batas operasional Public Beta terbaru, gunakan `docs/PUBLIC_BETA_PLAN.md`. Estimasi token/model legacy di bawah dipertahankan sebagai histori perencanaan dan tidak boleh dipakai untuk mengisi konfigurasi production tanpa verifikasi vendor.
 
 ## 1. Jawaban Singkat (Rekomendasi)
 
@@ -34,7 +36,7 @@ Poin kunci: **biaya terbesar pilot bukan infra, tapi waktu** (dan labor kalau di
 | Supabase (Postgres + Auth + Edge) | Rp0 (Free: 2 project, 500MB) | Pro ~US$25 (~Rp410k) + usage | Rp0 → Rp410k di bulan 2–3 bila beta aktif |
 | Cloudflare (Pages/CDN/WAF/DDoS/DNS) | Rp0 | — | Rp0 |
 | deepseek (LLM) | pay-as-you-go | — | **US$5–10 (~Rp80–165k)** — budget PRD US$7/bln cukup |
-| Search API | Brave/Serper/Tavily free tier (~1–2,5k query/bln) | US$3–5/bln bila lewat | Rp0 (diverifikasi saat implementasi) |
+| Search API | Tavily `basic` free tier (1.000 kredit/bln); Serper fallback manual | US$3–5/bln bila lewat | Rp0 selama di dalam kuota gratis (diverifikasi 2026-09-07) |
 | Monitoring/analytics (Sentry/PostHog) | Rp0 (free tier) | US$10+ bila traffic besar | Rp0 |
 | Error/queue (pg-boss di Supabase) | Rp0 | — | Rp0 |
 | **Total/bln** | **US$5–10 (~Rp80–165k)** | **US$25–45 (~Rp410–740k)** | **±Rp150–400k/bln** |
@@ -45,12 +47,12 @@ Poin kunci: **biaya terbesar pilot bukan infra, tapi waktu** (dan labor kalau di
 
 **Rekomendasi: US$10/bulan** (LLM US$7 + Search US$3) adalah **minimum yang realistis** — bukan sekadar nyaman. Alasannya hitung-hitungan:
 
-**Per Deep Scan (deepseek, routing murah + truncation, harga 2025 sebelum potongan):** ±30–50k token input + 8–12k output ≈ **US$0.008–0.022**. Potongan harga DeepSeek V3.2 (>50%) menurunkannya lebih jauh.
+**Per Deep Scan (estimasi legacy):** angka lama tidak lagi menjadi konfigurasi. Public Beta memakai `deepseek-v4-flash`, batch extraction, batas output, cache bersama, dan rate vendor yang diverifikasi saat rollout.
 
 | Level | Budget | Kapasitas | Kapan dipakai |
 |---|---|---|---|
 | **Floor sementara** | US$3–5/bln (LLM only; search dalam free tier) | ±150–330 Deep Scan/bln (~5–11/hari) | Hanya 2–4 minggu pertama, volume scan rendah |
-| **MINIMUM REALISTIS** | **US$10/bln** (LLM US$7 + Search US$3) | ±450+ Deep Scan/bln + buffer melewati free-tier search | Pilot F1 normal (100-user beta, cache & discovery lock aktif) |
+| **MINIMUM REALISTIS** | **US$10/bln** | Kapasitas diukur dari telemetry staging, bukan asumsi token lama | Pilot beta terbatas dengan cache & discovery lock |
 | Nyaman | US$15–20/bln | Headroom Governor (tidak sering masuk EMERGENCY MODE) | Beta mulai aktif harian |
 | Pertumbuhan | +US$25 (Supabase Pro) | Dominan oleh DB, bukan AI | Saat free limit Supabase terlewati |
 

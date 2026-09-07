@@ -972,7 +972,7 @@ Pilot budget baseline (dipecah, bukan satu angka):
 | **Komponen** | **Budget**  | **Catatan**                                                          |
 | ------------ | ----------- | -------------------------------------------------------------------- |
 | LLM (AI)     | US$7/month  | deepseek + model routing hemat (model mahal = last resort)            |
-| Search       | US$3/month  | gunakan search free-tier dulu (Brave/Serper tier gratis — diverifikasi saat implementasi) |
+| Search       | US$3/month  | gunakan Tavily `basic` free tier dulu; Serper hanya fallback manual — diverifikasi saat implementasi |
 | **Total**    | **US$10/month** | configurable melalui environment/configuration                      |
 
 Pemisahan ini wajib karena search API dihitung per query dan dapat mendominasi budget (lihat §42).
