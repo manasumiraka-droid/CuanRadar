@@ -2,6 +2,19 @@
 
 Status: **implementation branch** (`codex/build-5.1-security-hardening`) · belum diterapkan ke production.
 
+## Log rollout staging
+
+*2026-09-07 — Supabase project `CuanRadar Staging` (`ojdqlhznveomahfrxmwn`)*
+
+- [x] Repo ditautkan ke project staging yang terpisah dari production.
+- [x] Dry-run migrasi memverifikasi urutan `0001_init.sql` → `0002_build_5_1_security_hardening.sql`.
+- [x] Kedua migrasi berhasil diterapkan ke staging.
+- [ ] Secret provider dan kontrol operasional staging belum dikonfigurasi.
+- [ ] Edge Function `scan` dan frontend preview belum di-deploy.
+- [ ] Smoke test serta pemeriksaan audit/budget belum dijalankan.
+
+Production belum disentuh. Jangan melanjutkan deploy fungsi sebelum seluruh secret wajib tersedia.
+
 ## Scope yang diimplementasikan
 
 - Akses review queue memerlukan login dan role `editor`/`admin` dari `app_metadata`; response Deep Scan dan UI publik hanya menampilkan jumlah kandidat, bukan payload mentah.
