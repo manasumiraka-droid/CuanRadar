@@ -19,6 +19,8 @@ Status: **implementation branch** (`codex/build-5.1-security-hardening`) · belu
 - [x] Concurrency test lulus: enam Quick Scan paralel menghasilkan 3 sukses, 2 penolakan kuota, dan 1 penolakan rate-limit; dua request dengan idempotency key sama menghasilkan `200` + `409`, satu riwayat, dan satu konsumsi kuota.
 - [ ] Inspeksi log lengkap, backup/restore, dan rollback masih harus dilakukan.
 
+Status operations drill dan runbook tercatat di `docs/BUILD_5_1_OPERATIONS.md`. Artefak rollback fungsi/frontend sudah diverifikasi tersedia, tetapi gate tetap terbuka: audit log memerlukan akses Logs Explorer/Management API yang diberikan eksplisit, sedangkan restore terisolasi memerlukan Docker Desktop atau preview database branch. Staging saat ini tidak memiliki PITR maupun physical backup.
+
 Deep Scan pertama menemukan output JSON model terpotong. Perbaikan membatasi ekstraksi ke lima aplikasi, menaikkan output terkontrol ke 2.500 token, membedakan retry, dan mengklasifikasikan truncation; smoke test ulang selesai dalam satu request AI.
 
 Tes concurrency awal memunculkan `503` sementara saat beberapa instance menginisialisasi key rate-limit yang sama. Migrasi `0003_build_5_1_rate_limit_concurrency.sql` menambahkan transaction-scoped advisory lock per key; pengujian ulang tidak menghasilkan `503` dan seluruh counter database tetap tepat.
